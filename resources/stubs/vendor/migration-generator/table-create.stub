@@ -1,0 +1,5 @@
+if (!Schema::hasTable('[TableName]')) {
+    Schema::create('[TableName]', function (Blueprint $table) {
+        [Schema]
+    });
+}
