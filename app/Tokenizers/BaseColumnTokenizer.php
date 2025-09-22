@@ -19,4 +19,7 @@ abstract class BaseColumnTokenizer extends BaseTokenizer implements ColumnTokeni
     {
         return $this->definition;
     }
+    public function tokenize(): self{
+        return $this;
+     }
 }

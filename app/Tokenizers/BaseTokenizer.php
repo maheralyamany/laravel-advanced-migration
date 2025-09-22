@@ -16,15 +16,14 @@ abstract class BaseTokenizer
 
         $value = str_replace("DEFAULT ''''", 'DEFAULT "MAHER"', $value);
         $this->value = str_replace("DEFAULT ''", 'DEFAULT "MAHER"', $value);
-
     }
 
     public function iniTokens()
     {
         $prune = false;
         $pruneSingleQuotes = false;
-//\(?\'(.+?)?\s(.+?)?\'\)?
-//first get rid of any single quoted stuff with '' around it
+        //\(?\'(.+?)?\s(.+?)?\'\)?
+        //first get rid of any single quoted stuff with '' around it
         if (preg_match_all('/\'\'(.+?)\'\'/', $this->value, $matches)) {
             foreach ($matches[0] as $key => $singleQuoted) {
                 $toReplace = $singleQuoted;
@@ -61,21 +60,8 @@ abstract class BaseTokenizer
         return new static($line);
     }
 
-    /**
-     * @param string $line
-     * @return static
-     */
-    public static function parse(string $line)
-    {
-        $tokenizer = (new static($line));
-        $tokenizer->iniTokens();
-        $tokenize = $tokenizer->tokenize();
-       /*  if(str_contains($line, 'ref_no'))
-        dd([$tokenize->definition, $line]); */
 
-        return $tokenize;
-    }
-    public static function mParse(string $line, $tableName)
+   /*  public static function mParse(string $line, $tableName)
     {
         $tokenizer = (new static($line));
         $tokens = $tokenizer->iniTokens();
@@ -85,12 +71,9 @@ abstract class BaseTokenizer
             if (str_contains($line, 'country_ar')) {
                 dd(['tokens' => $tokens, 'tokenize' => $tokenize]);
             }
-
         }
-
         return $tokenize;
-
-    }
+    } */
 
     protected function parseColumn($value)
     {
@@ -113,7 +96,7 @@ abstract class BaseTokenizer
     {
         array_unshift($this->tokens, $value);
     }
-     public function tokenize(): self{
+    /*  public function tokenize(): self{
         return $this;
-     }
+     } */
 }

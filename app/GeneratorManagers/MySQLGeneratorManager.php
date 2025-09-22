@@ -22,8 +22,10 @@ class MySQLGeneratorManager extends BaseGeneratorManager implements GeneratorMan
         foreach ($tables as $rowNumber => $table) {
             $tableData = (array) $table;
             $table = $tableData[array_key_first($tableData)];
+
             $tableType = $tableData['Table_type'];
             if ($tableType === 'BASE TABLE') {
+                $this->addTableName($table);
                 $this->addTableDefinition(TableGenerator::init($table)->definition());
             } elseif ($tableType === 'VIEW') {
                 $this->addViewDefinition(ViewGenerator::init($table)->definition());

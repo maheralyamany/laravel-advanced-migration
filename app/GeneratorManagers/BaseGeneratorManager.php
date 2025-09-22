@@ -15,6 +15,7 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
 {
 
     protected array $tableDefinitions = [];
+    protected array $tableNames = [];
 
     protected array $viewDefinitions = [];
 
@@ -34,6 +35,13 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
     {
         return $this->tableDefinitions;
     }
+    /**
+     * @return array<string>
+     */
+    public function getTableNames(): array
+    {
+        return $this->tableNames;
+    }
 
     /**
      * @return array<ViewDefinition>
@@ -46,7 +54,11 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
     public function addTableDefinition(TableDefinition $tableDefinition): BaseGeneratorManager
     {
         $this->tableDefinitions[] = $tableDefinition;
-
+        return $this;
+    }
+    public function addTableName(string $tableName): BaseGeneratorManager
+    {
+        $this->tableNames[] = $tableName;
         return $this;
     }
 
@@ -57,14 +69,14 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
         return $this;
     }
 
-    public function handle(string $basePath, array $tableNames = [], array $viewNames = [],string $database='')
+    public function handle(string $basePath, array $tableNames = [], array $viewNames = [], string $database = '')
     {
 
         $this->init();
 
+
         $tableDefinitions = collect($this->getTableDefinitions());
         $viewDefinitions = collect($this->getViewDefinitions());
-
         $this->createMissingDirectory($basePath);
 
         if (count($tableNames) > 0) {
@@ -114,9 +126,12 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
      * @param array<TableDefinition> $tableDefinitions
      * @param $basePath
      */
-    public function writeTableMigrations(array $tableDefinitions, $basePath)
+    public function writeTableMigrations( $tableDefinitions, $basePath)
     {
+
+      // dd($tableDefinitions);
         foreach ($tableDefinitions as $key => $tableDefinition) {
+            
             $tableDefinition->formatter()->write($basePath, $key);
         }
     }

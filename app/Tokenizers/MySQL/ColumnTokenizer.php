@@ -68,7 +68,20 @@ class ColumnTokenizer extends BaseColumnTokenizer
             $this->putBack($nextPiece);
         }
     }
+ /**
+     * @param string $line
+     * @return static
+     */
+    public static function parse(string $line)
+    {
+        $tokenizer = (new static($line));
+        $tokenizer->iniTokens();
+        $tokenize = $tokenizer->tokenize();
+       /*  if(str_contains($line, 'ref_no'))
+        dd([$tokenize->definition, $line]); */
 
+        return $tokenize;
+    }
     protected function consumeColumnType()
     {
         $originalColumnType = $columnType = strtolower($this->consume());

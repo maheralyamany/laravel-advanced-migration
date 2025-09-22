@@ -14,6 +14,7 @@ trait CleansUpForeignKeyIndices
     protected function cleanUpForeignKeyIndices(): void
     {
         $indexDefinitions = $this->definition()->getIndexDefinitions();
+       // dd( $indexDefinitions);
         foreach ($indexDefinitions as $index) {
             /** @var \App\Definitions\IndexDefinition $index */
             if ($index->getIndexType() === 'index') {

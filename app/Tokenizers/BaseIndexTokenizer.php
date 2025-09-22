@@ -19,4 +19,7 @@ abstract class BaseIndexTokenizer extends BaseTokenizer implements IndexTokenize
     {
         return $this->definition;
     }
+    public function tokenize(): self{
+        return $this;
+     }
 }
