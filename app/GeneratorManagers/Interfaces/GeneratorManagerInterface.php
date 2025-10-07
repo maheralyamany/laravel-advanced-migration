@@ -18,4 +18,6 @@ interface GeneratorManagerInterface
     public function getTableDefinitions(): array;
 
     public function getViewDefinitions(): array;
+
+    public function setCommand(\Illuminate\Console\Command|null $command): static;
 }

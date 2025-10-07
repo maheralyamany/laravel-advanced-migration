@@ -7,7 +7,7 @@ use App\Generators\MySQL\ViewGenerator;
 use App\Generators\MySQL\TableGenerator;
 use App\GeneratorManagers\Interfaces\GeneratorManagerInterface;
 
-class MySQLGeneratorManager extends BaseGeneratorManager implements GeneratorManagerInterface
+class MySQLGeneratorManager extends BaseGeneratorManager /* implements GeneratorManagerInterface */
 {
     public static function driver(): string
     {

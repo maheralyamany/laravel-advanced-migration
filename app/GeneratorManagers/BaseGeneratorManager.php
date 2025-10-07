@@ -19,6 +19,13 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
 
     protected array $viewDefinitions = [];
 
+
+    /**
+     * Undocumented variable
+     *
+     * @var \Illuminate\Console\Command|null
+     */
+    protected $command;
     abstract public function init();
 
     public function createMissingDirectory($basePath)
@@ -26,6 +33,12 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
         if (! is_dir($basePath)) {
             mkdir($basePath, 0777, true);
         }
+    }
+
+    public function setCommand(\Illuminate\Console\Command|null $command): static
+    {
+        $this->command = $command;
+        return $this;
     }
 
     /**
@@ -104,7 +117,12 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
 
         $this->writeViewMigrations($viewDefinitions->toArray(), $basePath, count($sorted));
     }
-
+    public  function callCommandOutput($string, $style = 'info', $verbosity = null): void
+    {
+        if (!is_null($this->command)) {
+            $this->command->line($string, $style, $verbosity);
+        }
+    }
     /**
      * @param array<TableDefinition> $tableDefinitions
      * @return array<TableDefinition>
@@ -126,13 +144,15 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
      * @param array<TableDefinition> $tableDefinitions
      * @param $basePath
      */
-    public function writeTableMigrations( $tableDefinitions, $basePath)
+    public function writeTableMigrations($tableDefinitions, $basePath)
     {
 
-      // dd($tableDefinitions);
+        // dd($tableDefinitions);
         foreach ($tableDefinitions as $key => $tableDefinition) {
-            
-            $tableDefinition->formatter()->write($basePath, $key);
+            $tableName = $tableDefinition->getPresentableTableName();
+            $filepath = $tableDefinition->formatter()->write($basePath, $key);
+
+            $this->callCommandOutput(sprintf("✅ Table %s Migration generated at \n %s",  $tableName, $filepath));
         }
     }
 
