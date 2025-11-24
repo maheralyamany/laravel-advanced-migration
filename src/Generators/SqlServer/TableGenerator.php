@@ -14,7 +14,7 @@ class TableGenerator extends BaseTableGenerator
         return \AdvancedMigration\Constants::SQLSRV_DRIVER;
     }
 
-    public function resolveStructure()
+    public function getResolvedStructure(): array
     {
         $table = $this->definition()->getTableName();
         $schema = $this->definition()->getSchema() ?? 'dbo';
@@ -50,7 +50,7 @@ class TableGenerator extends BaseTableGenerator
         ", [$schema, $table]);
 
         if (count($pks)) {
-            $cols = array_map(fn($i)=> "[".$i->COLUMN_NAME."]", $pks);
+            $cols = array_map(fn($i) => "[" . $i->COLUMN_NAME . "]", $pks);
             $lines[] = "CONSTRAINT pk_{$table} PRIMARY KEY (" . implode(',', $cols) . ")";
         }
 
@@ -71,13 +71,13 @@ class TableGenerator extends BaseTableGenerator
             $grouped[$f->fk_name][] = $f;
         }
         foreach ($grouped as $fkName => $items) {
-            $cols = array_map(fn($i)=> "[".$i->column_name."]", $items);
+            $cols = array_map(fn($i) => "[" . $i->column_name . "]", $items);
             $refTable = $items[0]->referenced_table;
-            $refCols = array_map(fn($i)=> "[".$i->referenced_column."]", $items);
+            $refCols = array_map(fn($i) => "[" . $i->referenced_column . "]", $items);
             $lines[] = "CONSTRAINT {$fkName} FOREIGN KEY (" . implode(',', $cols) . ") REFERENCES [{$refTable}] (" . implode(',', $refCols) . ")";
         }
 
-        $this->rows = $lines;
+        return $lines;
     }
 
     protected function isColumnLine($line)

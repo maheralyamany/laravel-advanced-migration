@@ -2,8 +2,8 @@
 
 namespace AdvancedMigration\Generators;
 
-use AdvancedMigration\Definitions\TableDefinition;
-;
+use AdvancedMigration\Definitions\TableDefinition;;
+
 use AdvancedMigration\Generators\Concerns\CleansUpMorphColumns;
 use AdvancedMigration\Generators\Concerns\CleansUpColumnIndices;
 use AdvancedMigration\Generators\Concerns\CleansUpTimestampsColumn;
@@ -35,11 +35,17 @@ abstract class BaseTableGenerator implements TableGeneratorInterface
     {
         return $this->definition;
     }
-
-    abstract public function resolveStructure();
+    public abstract function getResolvedStructure(): array;
+    //abstract public function resolveStructure();
 
     abstract public function parse();
-
+    public function resolveStructure()
+    {
+        $rows = $this->getResolvedStructure();
+        if (empty($rows))
+            return;
+        $this->rows = $rows;
+    }
     public static function init(string $tableName, array $rows = [])
     {
         $instance = (new static($tableName, $rows));
