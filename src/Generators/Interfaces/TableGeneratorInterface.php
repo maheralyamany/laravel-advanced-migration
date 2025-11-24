@@ -4,6 +4,8 @@ namespace AdvancedMigration\Generators\Interfaces;
 
 use AdvancedMigration\Definitions\TableDefinition;
 
+;
+
 interface TableGeneratorInterface
 {
     public static function driver(): string;

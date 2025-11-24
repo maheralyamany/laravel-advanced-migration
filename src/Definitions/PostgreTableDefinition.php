@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace AdvancedMigration\Definitions;
 
-class PostgreTableDefinition extends BaseTableDefinition
+class PostgreTableDefinition extends TableDefinition
 {
-  public function __construct()
+   public  function getDriver(): string
   {
-    parent::__construct();
+    return \AdvancedMigration\Constants::PGSQL_DRIVER;
   }
   public function getListTableMetadataSQL(string $table, ?string $database = null): string
   {

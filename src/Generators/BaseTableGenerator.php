@@ -3,6 +3,7 @@
 namespace AdvancedMigration\Generators;
 
 use AdvancedMigration\Definitions\TableDefinition;
+;
 use AdvancedMigration\Generators\Concerns\CleansUpMorphColumns;
 use AdvancedMigration\Generators\Concerns\CleansUpColumnIndices;
 use AdvancedMigration\Generators\Concerns\CleansUpTimestampsColumn;
@@ -22,10 +23,11 @@ abstract class BaseTableGenerator implements TableGeneratorInterface
 
     public function __construct(string $tableName, array $rows = [])
     {
-        $this->definition = new TableDefinition([
-            'driver'    => static::driver(),
-            'tableName' => $tableName
+        $this->definition = TableDefinition::newDefinition([
+            'driver' => static::driver(),
+            'tableName' => $tableName,
         ]);
+
         $this->rows = $rows;
     }
 

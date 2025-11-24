@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace AdvancedMigration\Definitions;
 
-class SqlServerTableDefinition extends BaseTableDefinition
+class SqlServerTableDefinition extends TableDefinition
 {
-  public function __construct()
+  public  function getDriver(): string
   {
-    parent::__construct();
+    return \AdvancedMigration\Constants::SQLSRV_DRIVER;
   }
   public function getListTableMetadataSQL(string $table, ?string $database = null): string
   {

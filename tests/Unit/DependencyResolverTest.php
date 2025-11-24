@@ -3,17 +3,18 @@
 namespace Tests\Unit;
 
 use AdvancedMigration\Constants;
+use AdvancedMigration\Definitions\TableDefinition;
 use Tests\TestCase;
 use AdvancedMigration\Helpers\DependencyResolver;
 use AdvancedMigration\Definitions\IndexDefinition;
-use AdvancedMigration\Definitions\TableDefinition;
+
 use AdvancedMigration\Definitions\ColumnDefinition;
 
 class DependencyResolverTest extends TestCase
 {
     public function test_it_can_find_simple_dependencies()
     {
-        $tableDefinition = new TableDefinition([
+        $tableDefinition = TableDefinition::newDefinition([
             'tableName'         => 'tests',
             'columnDefinitions' => [
                 (new ColumnDefinition())->setColumnName('id')->setMethodName('id')->setAutoIncrementing(true)->setPrimary(true),
@@ -22,7 +23,7 @@ class DependencyResolverTest extends TestCase
             'indexDefinitions' => [],
         ]);
 
-        $foreignTableDefinition = new TableDefinition([
+        $foreignTableDefinition = TableDefinition::newDefinition([
             'tableName'         => 'test_items',
             'columnDefinitions' => [
                 (new ColumnDefinition())->setColumnName('id')->setMethodName('id')->setAutoIncrementing(true)->setPrimary(true),
@@ -42,7 +43,7 @@ class DependencyResolverTest extends TestCase
 
     public function test_it_finds_cyclical_dependencies()
     {
-        $tableDefinition = new TableDefinition([
+        $tableDefinition =TableDefinition::newDefinition([
             'tableName'         => 'tests',
             'driver'            =>Constants::MYSQL_DRIVER,
             'columnDefinitions' => [
@@ -54,7 +55,7 @@ class DependencyResolverTest extends TestCase
             ],
         ]);
 
-        $foreignTableDefinition = new TableDefinition([
+        $foreignTableDefinition = TableDefinition::newDefinition([
             'tableName'         => 'test_items',
             'driver'            => Constants::MYSQL_DRIVER,
             'columnDefinitions' => [

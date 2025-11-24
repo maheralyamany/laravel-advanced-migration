@@ -4,17 +4,33 @@ declare(strict_types=1);
 
 namespace AdvancedMigration\Definitions;
 
-class MySQLTableDefinition extends BaseTableDefinition
+class MySQLTableDefinition extends TableDefinition
 {
-  public function __construct()
+  public  function getDriver(): string
   {
-    parent::__construct();
+    return \AdvancedMigration\Constants::MYSQL_DRIVER;
   }
   public function getListTableMetadataSQL(string $table, ?string $database = null): string
   {
     $database = $this->getDatabaseName($database);
-
-    return sprintf(
+    $query = sprintf(
+      <<<'SQL'
+          SELECT t.ENGINE,
+                t.AUTO_INCREMENT,
+                t.TABLE_COMMENT,
+                t.CREATE_OPTIONS,
+                t.TABLE_COLLATION,
+                ccsa.CHARACTER_SET_NAME
+          FROM information_schema.TABLES t
+              INNER JOIN information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` ccsa
+                  ON ccsa.COLLATION_NAME = t.TABLE_COLLATION
+          WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = %s AND TABLE_NAME = %s
+          SQL,
+      $this->getDatabaseNameSQL($database),
+      $this->quoteStringLiteral($table),
+    );
+    return   $query;
+    /*  return sprintf(
       <<<'SQL'
                 SELECT t.ENGINE,
                     t.AUTO_INCREMENT,
@@ -39,7 +55,7 @@ class MySQLTableDefinition extends BaseTableDefinition
       $this->quoteIdentifier($table),
       $this->getDatabaseNameSQL($database),
       $this->quoteStringLiteral($table)
-    );
+    ); */
   }
   protected  function quoteStringLiteral(string $str): string
   {

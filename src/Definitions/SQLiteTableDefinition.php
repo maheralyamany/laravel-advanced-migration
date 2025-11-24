@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace AdvancedMigration\Definitions;
 
-class SQLiteTableDefinition extends BaseTableDefinition
+class SQLiteTableDefinition extends TableDefinition
 {
-  public function __construct()
+  public  function getDriver(): string
   {
-    parent::__construct();
+    return \AdvancedMigration\Constants::SQLITE_DRIVER;
   }
   public function getListTableMetadataSQL(string $table, ?string $database = null): string
   {
     $database = $this->getDatabaseName($database);
-    $_table = $this->quoteStringLiteral($table);
-
-    return sprintf(
+    /* $_table = $this->quoteStringLiteral($table);
+     return sprintf(
       <<<'SQL'
                 WITH cols AS (
                     SELECT GROUP_CONCAT(name || ' ' || type) AS column_info
@@ -38,7 +37,21 @@ class SQLiteTableDefinition extends BaseTableDefinition
       $_table,
       $this->quoteIdentifier($table),
       $_table
-    );
+    ); */
+    $query = sprintf("SELECT
+    'sqlite' AS ENGINE,  -- SQLite لا يستخدم محركات مثل MySQL
+        CASE
+            WHEN m.sql LIKE '%AUTOINCREMENT%' THEN 1
+            ELSE NULL
+        END AS AUTO_INCREMENT,
+        NULL AS TABLE_COMMENT,  -- SQLite لا يدعم تعليقات الجدول
+        NULL AS CREATE_OPTIONS, -- SQLite لا يوجد CREATE_OPTIONS
+        'BINARY' AS TABLE_COLLATION, -- افتراض عام، SQLite يستخدم UTF-8/UTF-16 داخلياً
+        'UTF-8' AS CHARACTER_SET_NAME -- SQLite لا يحدد charset لكل جدول
+    FROM sqlite_master m
+    WHERE m.type = 'table'
+      AND m.name = %s;", $this->quoteIdentifier($table));
+    return  $query;
   }
   protected  function quoteStringLiteral(string $str): string
   {

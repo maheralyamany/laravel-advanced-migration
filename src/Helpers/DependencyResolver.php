@@ -2,25 +2,22 @@
 
 namespace AdvancedMigration\Helpers;
 
+use AdvancedMigration\Definitions\TableDefinition;
 use MJS\TopSort\Implementations\FixedArraySort;
 use AdvancedMigration\Definitions\IndexDefinition;
-use AdvancedMigration\Definitions\TableDefinition;
+;
 
 class DependencyResolver
 {
     /** @var array<TableDefinition> */
     protected array $tableDefinitions = [];
-
     /** @var array<TableDefinition> */
     protected array $sorted = [];
-
     public function __construct(array $tableDefinitions)
     {
         $this->tableDefinitions = $tableDefinitions;
-
         $this->build();
     }
-
     protected function build()
     {
         /** @var TableDefinition[] $keyedDefinitions */
@@ -39,7 +36,6 @@ class DependencyResolver
                 }
             }
         }
-
         $sorter = new FixedArraySort();
         $circulars = [];
         $sorter->setCircularInterceptor(function ($nodes) use (&$circulars) {
@@ -52,7 +48,6 @@ class DependencyResolver
         $definitions = collect($sorted)->map(function ($item) use ($keyedDefinitions) {
             return $keyedDefinitions[$item];
         })->toArray();
-
         foreach ($circulars as $groups) {
             [$start, $end] = $groups;
             $startDefinition = $keyedDefinitions[$start];
@@ -63,12 +58,10 @@ class DependencyResolver
             foreach ($indicesForStart as $index) {
                 $startDefinition->removeIndexDefinition($index);
             }
-            if(!in_array($start, $sorted)) {
+            if (!in_array($start, $sorted)) {
                 $definitions[] = $startDefinition;
             }
-
             $endDefinition = $keyedDefinitions[$end];
-
             $indicesForEnd = collect($endDefinition->getForeignKeyDefinitions())
                 ->filter(function (IndexDefinition $index) use ($start) {
                     return $index->getForeignReferencedTable() == $start;
@@ -76,27 +69,24 @@ class DependencyResolver
             foreach ($indicesForEnd as $index) {
                 $endDefinition->removeIndexDefinition($index);
             }
-            if(!in_array($end, $sorted)) {
+            if (!in_array($end, $sorted)) {
                 $definitions[] = $endDefinition;
             }
-
-            $definitions[] = new TableDefinition([
+            $definitions[] = TableDefinition::newDefinition([
+                'driver'         => $startDefinition->getDriver(),
                 'tableName'         => $startDefinition->getTableName(),
-                'driver'            => $startDefinition->getDriver(),
                 'columnDefinitions' => [],
                 'indexDefinitions'  => $indicesForStart->toArray()
             ]);
-
-            $definitions[] = new TableDefinition([
+            $definitions[] = TableDefinition::newDefinition([
+                'driver'         => $endDefinition->getDriver(),
                 'tableName'         => $endDefinition->getTableName(),
-                'driver'            => $endDefinition->getDriver(),
                 'columnDefinitions' => [],
                 'indexDefinitions'  => $indicesForEnd->toArray()
             ]);
         }
         $this->sorted = $definitions;
     }
-
     /**
      * @return TableDefinition[]
      */
