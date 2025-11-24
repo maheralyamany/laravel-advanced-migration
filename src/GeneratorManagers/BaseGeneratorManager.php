@@ -2,19 +2,23 @@
 
 namespace AdvancedMigration\GeneratorManagers;
 
+use AdvancedMigration\Definitions\TableDefinition;
 use AdvancedMigration\Definitions\ViewDefinition;
 use AdvancedMigration\Helpers\Dependency;
 use AdvancedMigration\Helpers\ConfigResolver;
 use AdvancedMigration\Helpers\DependencyResolver;
-use AdvancedMigration\Definitions\TableDefinition;
+
 use AdvancedMigration\GeneratorManagers\Interfaces\GeneratorManagerInterface;
 use AdvancedMigration\Helpers\DependencyResolverV2;
 use AdvancedMigration\Helpers\DependencyResolverV3;
 
 abstract class BaseGeneratorManager implements GeneratorManagerInterface
 {
-
-    protected array $tableDefinitions = [];
+    /**
+     *
+     * @var array<TableDefinition>
+     */
+    protected  $tableDefinitions = [];
     protected array $tableNames = [];
 
     protected array $viewDefinitions = [];

@@ -3,10 +3,11 @@
 namespace Tests\Unit\GeneratorManagers;
 
 use AdvancedMigration\Constants;
+use AdvancedMigration\Definitions\TableDefinition;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use AdvancedMigration\Definitions\IndexDefinition;
-use AdvancedMigration\Definitions\TableDefinition;
+
 use AdvancedMigration\Definitions\ColumnDefinition;
 use AdvancedMigration\GeneratorManagers\MySQLGeneratorManager;
 
@@ -26,7 +27,7 @@ class MySQLGeneratorManagerTest extends TestCase
     {
         /** @var MySQLGeneratorManager $mocked */
         $mocked = $this->getManagerMock([
-            new TableDefinition([
+            TableDefinition::newDefinition([
                 'tableName'         => 'tests',
                 'driver'            => Constants::MYSQL_DRIVER,
                 'columnDefinitions' => [
@@ -37,7 +38,7 @@ class MySQLGeneratorManagerTest extends TestCase
                     (new IndexDefinition())->setIndexName('fk_test_item_id')->setIndexColumns(['test_item_id'])->setIndexType('foreign')->setForeignReferencedColumns(['id'])->setForeignReferencedTable('test_items')
                 ],
             ]),
-            new TableDefinition([
+            TableDefinition::newDefinition([
                 'tableName'         => 'test_items',
                 'driver'            => Constants::MYSQL_DRIVER,
                 'columnDefinitions' => [

@@ -20,7 +20,7 @@ class TableGenerator extends BaseTableGenerator
         return Constants::MYSQL_DRIVER;
     }
 
-    public function resolveStructure()
+    public function getResolvedStructure(): array
     {
         $structure = DB::select('SHOW CREATE TABLE `' . $this->definition()->getTableName() . '`');
         $structure = $structure[0];
@@ -32,9 +32,9 @@ class TableGenerator extends BaseTableGenerator
             array_pop($lines); //get rid of last line
 
             $lines = array_map(fn($item) => trim($item), $lines);
-            $this->rows = $lines;
+           return $lines;
         } else {
-            $this->rows = [];
+            return [];
         }
     }
 

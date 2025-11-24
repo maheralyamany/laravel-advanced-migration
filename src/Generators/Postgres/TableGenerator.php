@@ -14,7 +14,7 @@ class TableGenerator extends BaseTableGenerator
         return \AdvancedMigration\Constants::PGSQL_DRIVER;
     }
 
-    public function resolveStructure()
+    public function getResolvedStructure(): array
     {
         $table = $this->definition()->getTableName();
 
@@ -71,7 +71,7 @@ class TableGenerator extends BaseTableGenerator
             }
         }
 
-        $this->rows = $lines;
+        return $lines;
     }
 
     protected function isColumnLine($line)
