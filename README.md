@@ -1,19 +1,37 @@
-# Laravel Advanced Migration
+<h1 align="center">Laravel Advanced Migration</h1>
+
+<p align="center">
+    <img src="https://img.shields.io/packagist/v/maheralyamany/laravel-advanced-migration" alt="Latest Version">
+    <img src="https://img.shields.io/packagist/dt/maheralyamany/laravel-advanced-migration" alt="Total Downloads">
+    <img src="https://img.shields.io/packagist/l/maheralyamany/laravel-advanced-migration" alt="License">
+    <img src="https://img.shields.io/github/stars/maheralyamany/laravel-advanced-migration" alt="Stars">
+</p>
 
 
+
+<p align="center">
 Generate migrations from existing database structures, an alternative to the schema dump provided by Laravel. A primary use case for this package would be a project that has many migrations that alter tables using `->change()` from doctrine/dbal that SQLite doesn't support and need a way to get table structures updated for SQLite to use in tests.
 Another use case would be taking a project with a database and no migrations and turning that database into base migrations.
+</p>
 
-# Installation
+## 📋 Requirements
+
+- PHP ^7.4 or higher
+- Laravel 9.x or higher
+- Composer
+
+
+## 🚀 Installation
 ```bash
 composer require maheralyamany/laravel-advanced-migration --dev
 ```
+
+### Publish Configuration
 
 ```bash
 php artisan vendor:publish --provider="AdvancedMigration\MigrationGeneratorProvider"
 ```
 
-  
 Copy config file from `vendor/maheralyamany/laravel-advanced-migration/config` to your Lumen config folder  
   
 Register service provider in bootstrap/app.php  
@@ -21,7 +39,7 @@ Register service provider in bootstrap/app.php
 $app->register(\AdvancedMigration\MigrationGeneratorProvider::class);  
 ```
 
-# Usage
+## 📖 Usage
 
 Whenever you have database changes or are ready to squash your database structure down to migrations, run: 
 ```bash
