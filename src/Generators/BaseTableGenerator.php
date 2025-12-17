@@ -42,6 +42,7 @@ abstract class BaseTableGenerator implements TableGeneratorInterface
     public function resolveStructure()
     {
         $rows = $this->getResolvedStructure();
+
         if (empty($rows))
             return;
         $this->rows = $rows;

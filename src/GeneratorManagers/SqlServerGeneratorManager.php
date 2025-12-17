@@ -26,13 +26,14 @@ class SqlServerGeneratorManager extends BaseGeneratorManager implements Generato
         foreach ($rows as $row) {
             $table = $row->TABLE_NAME;
             $type  = strtoupper($row->TABLE_TYPE); // BASE TABLE أو VIEW
-
+            if (!$this->isAllowedType($table, $type)) {
+                continue;
+            }
             if ($type === 'BASE TABLE') {
                 $this->addTableName($table);
                 $this->addTableDefinition(
                     TableGenerator::init($table)->definition()
                 );
-
             } elseif ($type === 'VIEW') {
                 $this->addViewDefinition(
                     ViewGenerator::init($table)->definition()

@@ -31,13 +31,14 @@ class PostgresGeneratorManager extends BaseGeneratorManager implements Generator
         foreach ($rows as $row) {
             $table = $row->table_name;
             $type  = strtoupper($row->table_type); // BASE TABLE, VIEW
-
+            if (!$this->isAllowedType($table, $type)) {
+                continue;
+            }
             if ($type === 'BASE TABLE') {
                 $this->addTableName($table);
                 $this->addTableDefinition(
                     TableGenerator::init($table)->definition()
                 );
-
             } elseif ($type === 'VIEW') {
                 $this->addViewDefinition(
                     ViewGenerator::init($table)->definition()
