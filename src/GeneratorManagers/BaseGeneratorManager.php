@@ -20,6 +20,8 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
      */
     protected  $tableDefinitions = [];
     protected array $tableNames = [];
+    protected array $allowedTables = [];
+    protected array $allowedViewes = [];
 
     protected array $viewDefinitions = [];
 
@@ -78,6 +80,16 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
         $this->tableNames[] = $tableName;
         return $this;
     }
+    public function isAllowedType($name, $type): bool
+    {
+        $type = strtoupper($type);
+        if ($type === 'TABLE' || $type === 'BASE TABLE') {
+            return empty($this->allowedTables) || in_array($name, $this->allowedTables);
+        } elseif ($type === 'VIEW') {
+            return empty($this->allowedViewes) || in_array($name, $this->allowedViewes);
+        }
+        return false;
+    }
 
     public function addViewDefinition(ViewDefinition $definition): BaseGeneratorManager
     {
@@ -88,7 +100,8 @@ abstract class BaseGeneratorManager implements GeneratorManagerInterface
 
     public function handle(string $basePath, array $tableNames = [], array $viewNames = [])
     {
-
+        $this->allowedTables = $tableNames;
+        $this->allowedViewes = $viewNames;
         $this->init();
 
 

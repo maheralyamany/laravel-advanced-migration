@@ -22,16 +22,16 @@ class TableGenerator extends BaseTableGenerator
 
     public function getResolvedStructure(): array
     {
-        $structure = DB::select('SHOW CREATE TABLE `' . $this->definition()->getTableName() . '`');
+         $table = $this->definition()->getTableName();
+        $structure = DB::select('SHOW CREATE TABLE `' . $table . '`');
         $structure = $structure[0];
         $structure = (array) $structure;
         if (isset($structure['Create Table'])) {
             $lines = explode("\n", $structure['Create Table']);
-
             array_shift($lines); //get rid of first line
             array_pop($lines); //get rid of last line
-
             $lines = array_map(fn($item) => trim($item), $lines);
+
            return $lines;
         } else {
             return [];

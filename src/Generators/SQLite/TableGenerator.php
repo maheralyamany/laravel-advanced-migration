@@ -16,7 +16,6 @@ class TableGenerator extends BaseTableGenerator
         $table = $this->definition()->getTableName();
         $rows = DB::select("SELECT sql FROM sqlite_master WHERE type='table' AND name = ?", [$table]);
         if (count($rows) === 0 || empty($rows[0]->sql)) {
-           
             return [];
         }
         $create = $rows[0]->sql;
@@ -25,24 +24,41 @@ class TableGenerator extends BaseTableGenerator
     }
     protected function parseColumnsFromCreateSQL(string $sql): array
     {
-        // استخراج الجزء داخل الأقواس
         preg_match('/CREATE TABLE.*?\((.*)\)/is', $sql, $m);
-        $inner = trim($m[1]);
-        // تقسيم الأعمدة مع احترام الأقواس الداخلية
-        $parts = preg_split('/,(?![^()]*\))/m', $inner);
+        $body = trim($m[1]);
+        // split by commas NOT inside parentheses
+        $parts = preg_split('/,(?![^()]*\))/m', $body);
         $columns = [];
+        $primaryKeys = [];
         foreach ($parts as $part) {
-            $part = trim($part);
-            // تجاهل القيود مثل PRIMARY KEY..
-            if (!preg_match('/^"([^"]+)"/', $part)) {
+            $line = trim($part);
+            // foreign key (single or composite)
+            if (preg_match('/foreign key\s*\(([^)]+)\) references\s+"?(\w+)"?\s*\(([^)]+)\)(.*)/i', $line, $f)) {
+                $columns[] = $line;
                 continue;
             }
-            preg_match('/"([^"]+)"\s+(.+)/', $part, $col);
-            /* $columns[] = [
-                'name' => ,
-                'definition' => $col[2], // النوع + الخصائص
-            ]; */
+            if (preg_match('/primary\s+key\s*\(([^)]+)\)/i', $line, $pk)) {
+                $primaryKeys = array_map('trim', array_map(fn($v) => str_replace('"', "", $v), explode(',', $pk[1])));
+                continue;
+            }
+            if (!preg_match('/^"([^"]+)"/', $line)) {
+                continue;
+            }
+            preg_match('/"([^"]+)"\s+(.+)/', $line, $col);
             $columns[] = $col[1] . ' ' . $col[2] . ',';
+        }
+        if (!empty($primaryKeys)) {
+            foreach ($primaryKeys as $key) {
+                $autoIncrement = str_contains(\strtoupper($key), 'AUTOINCREMENT');
+                $column = trim(\str_replace(['AUTOINCREMENT', 'autoincrement'], "", $key));
+                $columns = collect($columns)->mapWithKeys((function ($line, $i) use ($autoIncrement, $column) {
+                    if (\str_starts_with($line, $column . " ")) {
+                        $split = explode(" ", $line);
+                        $line = \sprintf("%s %s primary key %s,", $split[0], $split[1], $autoIncrement ? 'autoincrement' : '');
+                    }
+                    return [$i => $line];
+                }))->all();
+            }
         }
         return $columns;
     }
@@ -52,6 +68,7 @@ class TableGenerator extends BaseTableGenerator
     }
     public function parse()
     {
+
         foreach ($this->rows as $line) {
             if ($this->isColumnLine($line)) {
                 $tokenizer = ColumnTokenizer::parse($line);
@@ -61,5 +78,6 @@ class TableGenerator extends BaseTableGenerator
                 $this->definition()->addIndexDefinition($tokenizer->definition());
             }
         }
+        
     }
 }

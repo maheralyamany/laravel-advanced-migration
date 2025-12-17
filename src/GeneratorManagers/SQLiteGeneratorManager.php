@@ -26,18 +26,19 @@ class SQLiteGeneratorManager extends BaseGeneratorManager implements GeneratorMa
         ");
 
         foreach ($rows as $row) {
-            $name = $row->name;
+            $table = $row->name;
             $type = strtolower($row->type);
-
+            if (!$this->isAllowedType($table, $type)) {
+                continue;
+            }
             if ($type === 'table') {
-                $this->addTableName($name);
+                $this->addTableName($table);
                 $this->addTableDefinition(
-                    TableGenerator::init($name)->definition()
+                    TableGenerator::init($table)->definition()
                 );
-
             } elseif ($type === 'view') {
                 $this->addViewDefinition(
-                    ViewGenerator::init($name)->definition()
+                    ViewGenerator::init($table)->definition()
                 );
             }
         }
